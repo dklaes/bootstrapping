@@ -25,14 +25,14 @@ def bootstrapping(i):
   global nchips
   for j in range(nchips):
     a = np.fromfile(path + "chip_%i.csv" %(j+1), sep="\t")
-    a = a.reshape((-1,14))
+    a = a.reshape((-1,15))
     lena = int(len(a))
     b = np.array([])
     k=1
     for k in range(lena):
       l = random.randrange(0,lena,1)
       b = np.append(b, a[l])
-    b = b.reshape(-1,14)
+    b = b.reshape(-1,15)
     np.savetxt(path + "/bootstrapping/realisation_" + str(i+1) + "/chip_" + str(j+1) + ".csv", b, fmt='%f', delimiter=" ")
     os.popen("cat " + path + "bootstrapping/realisation_" + str(i+1) + "/chip_" + str(j+1) + ".csv >> " + path + "/bootstrapping/realisation_" + str(i+1) + "/chip_all.csv")
   os.popen("NUMCHIPS=32 && ./illum_correction_fit_bootstrap.py " + path + "/bootstrapping/realisation_" + str(i+1) + "/")

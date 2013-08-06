@@ -9,9 +9,9 @@
 
 # including some important files
 # # # . ${INSTRUMENT:?}.ini
-. /vol/aibn41/aibn41_1/dklaes/data/reduce_KIDS/OMEGACAM.ini
-. /vol/aibn41/aibn41_1/dklaes/data/reduce_KIDS/bash_functions.include
-. /vol/aibn41/aibn41_1/dklaes/data/reduce_KIDS/progs.ini
+. /vol/euclid1/euclid1_raid1/dklaes/reduce_KIDS_1.7.6/OMEGACAM.ini
+. /vol/euclid1/euclid1_raid1/dklaes/reduce_KIDS_1.7.6/bash_functions.include
+. /vol/euclid1/euclid1_raid1/dklaes/reduce_KIDS_1.7.6/progs.ini
 
 MAIND=$1
 NCHIPS=$2
