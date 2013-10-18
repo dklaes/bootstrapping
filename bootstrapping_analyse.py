@@ -135,60 +135,198 @@ def calculatingeps(i):
   D = float(((os.popen("cat " + path + "chip_all.dat | grep D | awk '{print $3}'").readlines())[0]).strip())
   E = float(((os.popen("cat " + path + "chip_all.dat | grep E | awk '{print $3}'").readlines())[0]).strip())
 
+  centerx = (-E/C-2.0*B/C*((2.0*A*E-C*D)/(C*C-4.0*A*B)))*PIXXMAX/2.0
+  centery = ((2.0*A*E-C*D)/(C*C-4.0*A*B))*PIXYMAX/2.0
+
+  maxdistance = np.array([])
+  area = np.array([])
+
   # Creating arrays for xred (reduced and resized chip coordinates (for plotting and
   # numerical reasons)) and X (reduced (for plotting)). Having xred and X seperated doesn't
   # cause the problem of transforming the prefactors to the other coordinate system!
-#  xred = 2.0*(np.arange(0, int(CHIPXMAX), 10)+offset[i][1])/PIXXMAX
-#  X = np.arange(0, int(CHIPXMAX), 10)+offset[i][1]
-  xred = 2.0*(np.arange(-8552, 8472, 10))/PIXXMAX
-  X = np.arange(-8552, 8472, 10)
 
-  # Now the same for y, yred and Y.
-#  yred = 2.0*(np.arange(0, int(CHIPYMAX), 10)+offset[i][2])/PIXYMAX
-#  Y = np.arange(0, int(CHIPYMAX), 10)+offset[i][2]
-  yred = 2.0*(np.arange(-8583, 8430, 10))/PIXYMAX
-  Y = np.arange(-8583, 8430, 10)
+  xred = 2.0*(np.arange(-8552, 0, 1))/PIXXMAX
+  yred = 2.0*(np.arange(-8583, 0, 1))/PIXYMAX
 
   # Creating the corresponding meshgrids.
+  # Bottom left
   xxred, yyred = np.meshgrid(xred, yred)
-  XX, YY = np.meshgrid(X, Y)
-
+  del xred
+  del yred
   # Calculating the position dependend residuals.
   # - epswoZP:		residuals without chip zeropoints in resized chip coordinates (reduced data set),
   #			for plotting
   epswoZP = A * xxred**2 + B * yyred**2 + C * xxred * yyred + D * xxred + E * yyred
+  del xxred
+  del yyred
 
   cond=(epswoZP.flatten())>-0.015
+  X = np.arange(-8552, 0, 1)
+  Y = np.arange(-8583, 0, 1)
+  XX, YY = np.meshgrid(X, Y)
+  del X
+  del Y
   XXcond = (XX.flatten())[cond]
+  del XX
   YYcond = (YY.flatten())[cond]
+  del YY
   epscond = (epswoZP.flatten())[cond]
+  del epswoZP
+  del cond
 
   cond2=(epscond.flatten())<0.0
   XXcond2 = (XXcond.flatten())[cond2]
+  del XXcond
   YYcond2 = (YYcond.flatten())[cond2]
+  del YYcond
   epscond2 = (epscond.flatten())[cond2]
-
-#  if len(epscond2) == 0:
-#	return(0,0)
-
-  centerx = (-E/C-2.0*B/C*((2.0*A*E-C*D)/(C*C-4.0*A*B)))*PIXXMAX/2.0
-  centery = ((2.0*A*E-C*D)/(C*C-4.0*A*B))*PIXYMAX/2.0
+  del epscond
+  del cond2
 
   distance = np.sqrt(XXcond2*XXcond2+YYcond2*YYcond2)
-  maxdistance = np.amax(distance)
-  area = len(epscond2.flatten())*100
-  print(centerx,centery)
-  print(maxdistance, area)
+  maxdistance = np.append(maxdistance, np.amax(distance))
+  area = np.append(area, len(epscond2.flatten()))
 
-  a = np.amax(maxdistance)
-  b = area / (np.pi * a)
+
+  # bottom right
+  xred = 2.0*(np.arange(0, 8472, 1))/PIXXMAX
+  yred = 2.0*(np.arange(-8583, 0, 1))/PIXYMAX
+  # Creating the corresponding meshgrids.
+  xxred, yyred = np.meshgrid(xred, yred)
+  del xred
+  del yred
+  # Calculating the position dependend residuals.
+  # - epswoZP:		residuals without chip zeropoints in resized chip coordinates (reduced data set),
+  #			for plotting
+  epswoZP = A * xxred**2 + B * yyred**2 + C * xxred * yyred + D * xxred + E * yyred
+  del xxred
+  del yyred
+
+  cond=(epswoZP.flatten())>-0.015
+  X = np.arange(0, 8472, 1)
+  Y = np.arange(-8583, 0, 1)
+  XX, YY = np.meshgrid(X, Y)
+  del X
+  del Y
+  XXcond = (XX.flatten())[cond]
+  del XX
+  YYcond = (YY.flatten())[cond]
+  del YY
+  epscond = (epswoZP.flatten())[cond]
+  del epswoZP
+  del cond
+
+  cond2=(epscond.flatten())<0.0
+  XXcond2 = (XXcond.flatten())[cond2]
+  del XXcond
+  YYcond2 = (YYcond.flatten())[cond2]
+  del YYcond
+  epscond2 = (epscond.flatten())[cond2]
+  del epscond
+  del cond2
+
+  distance = np.sqrt(XXcond2*XXcond2+YYcond2*YYcond2)
+  maxdistance = np.append(maxdistance, np.amax(distance))
+  area = np.append(area, len(epscond2.flatten()))
+
+
+  # Upper left
+  xred = 2.0*(np.arange(-8552, 0, 1))/PIXXMAX
+  yred = 2.0*(np.arange(0, 8430, 1))/PIXYMAX
+  # Creating the corresponding meshgrids.
+  xxred, yyred = np.meshgrid(xred, yred)
+  # Calculating the position dependend residuals.
+  # - epswoZP:		residuals without chip zeropoints in resized chip coordinates (reduced data set),
+  #			for plotting
+  epswoZP = A * xxred**2 + B * yyred**2 + C * xxred * yyred + D * xxred + E * yyred
+  del xxred
+  del yyred
+
+  cond=(epswoZP.flatten())>-0.015
+  X = np.arange(-8552, 0, 1)
+  Y = np.arange(0, 8430, 1)
+  XX, YY = np.meshgrid(X, Y)
+  del X
+  del Y
+  XXcond = (XX.flatten())[cond]
+  del XX
+  YYcond = (YY.flatten())[cond]
+  del YY
+  epscond = (epswoZP.flatten())[cond]
+  del epswoZP
+  del cond
+
+  cond2=(epscond.flatten())<0.0
+  XXcond2 = (XXcond.flatten())[cond2]
+  del XXcond
+  YYcond2 = (YYcond.flatten())[cond2]
+  del YYcond
+  epscond2 = (epscond.flatten())[cond2]
+  del epscond
+  del cond2
+
+  distance = np.sqrt(XXcond2*XXcond2+YYcond2*YYcond2)
+  maxdistance = np.append(maxdistance, np.amax(distance))
+  area = np.append(area, len(epscond2.flatten()))
+
+
+  # Upper right
+  xred = 2.0*(np.arange(0, 8472, 1))/PIXXMAX
+  yred = 2.0*(np.arange(0, 8430, 1))/PIXYMAX
+  # Creating the corresponding meshgrids.
+  xxred, yyred = np.meshgrid(xred, yred)
+  del xred
+  del yred
+  # Calculating the position dependend residuals.
+  # - epswoZP:		residuals without chip zeropoints in resized chip coordinates (reduced data set),
+  #			for plotting
+  epswoZP = A * xxred**2 + B * yyred**2 + C * xxred * yyred + D * xxred + E * yyred
+  del xxred
+  del yyred
+
+  cond=(epswoZP.flatten())>-0.015
+  X = np.arange(0, 8472, 1)
+  Y = np.arange(0, 8430, 1)
+  XX, YY = np.meshgrid(X, Y)
+  del X
+  del Y
+  XXcond = (XX.flatten())[cond]
+  del XX
+  YYcond = (YY.flatten())[cond]
+  del YY
+  epscond = (epswoZP.flatten())[cond]
+  del epswoZP
+  del cond
+
+  cond2=(epscond.flatten())<0.0
+  XXcond2 = (XXcond.flatten())[cond2]
+  del XXcond
+  YYcond2 = (YYcond.flatten())[cond2]
+  del YYcond
+  epscond2 = (epscond.flatten())[cond2]
+  del epscond
+  del cond2
+
+  distance = np.sqrt(XXcond2*XXcond2+YYcond2*YYcond2)
+  maxdistance = np.append(maxdistance, np.amax(distance))
+  area = np.append(area, len(epscond2.flatten()))
+
+
+  maxdistancefinal = np.amax(maxdistance)
+  areafinal = np.sum(area)
+
+  print("The center is at (" + str(centerx) + "," + str(centery) + ")")
+  print(str(int(areafinal)) + " pixels are within limits.")
+
+  a = np.amax(maxdistancefinal)
+  b = areafinal / (np.pi * a)
   e = np.sqrt(a*a-b*b)
   nume = e/a
 
-  print(a,b,e,nume)
-
-  # Returning data for plotting.
-  return(maxdistance, area)
+  print("Length of major axis: " + str(a))
+  print("Length of minor axis: " + str(b))
+  print("Ellipticity: " + str(e))
+  print("Numerical ellipticity: " + str(nume))
 
 
 # Reading chip offsets from config file
