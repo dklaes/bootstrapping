@@ -81,7 +81,8 @@ for i in range(NREL):
 	PREFACTORSINPUT = np.loadtxt(path + "/realisation_" + str(i+1) + "/chip_all.dat", delimiter=" ", dtype={'names': ('factorname', 'equal', 'value', 'pm', 'error'), 'formats': ('S3', 'S1', 'S21', 'S2', 'S21')})
 
 	PREFACTORS = np.array([])
-	for j in range(NCHIPS):
+	# 5 prefactors
+	for j in range(5):
 		PREFACTORS = np.append(PREFACTORS, (float(PREFACTORSINPUT[j][2]), float(PREFACTORSINPUT[j][4])))
 		fprefactors.write("%i %.21f %.21f\n" %(i+1,float(PREFACTORSINPUT[j][2]),float(PREFACTORSINPUT[j][4])))
 	PREFACTORS = PREFACTORS.reshape((-1,2))
@@ -125,7 +126,7 @@ fcenterprop.close()
 
 # Analysis of ellipse shape
 def calculatingeps(i):
-  print("Start calculating data for chip " + str(i+1) + "/" + str(NCHIPS) + "...")
+#  print("Start calculating data for chip " + str(i+1) + "/" + str(NCHIPS) + "...")
   
   # Getting the prefactors.
   A = float(((os.popen("cat " + path + "chip_all.dat | grep A | awk '{print $3}'").readlines())[0]).strip())
@@ -133,34 +134,61 @@ def calculatingeps(i):
   C = float(((os.popen("cat " + path + "chip_all.dat | grep C | awk '{print $3}'").readlines())[0]).strip())
   D = float(((os.popen("cat " + path + "chip_all.dat | grep D | awk '{print $3}'").readlines())[0]).strip())
   E = float(((os.popen("cat " + path + "chip_all.dat | grep E | awk '{print $3}'").readlines())[0]).strip())
-  FCHIP = float(((os.popen("cat " + path + "chip_all.dat | grep -m1 F" + str(i+1) + " | awk '{print $3}'").readlines())[0]).strip())
 
   # Creating arrays for xred (reduced and resized chip coordinates (for plotting and
   # numerical reasons)) and X (reduced (for plotting)). Having xred and X seperated doesn't
   # cause the problem of transforming the prefactors to the other coordinate system!
-  xred = 2.0*(np.arange(0, int(CHIPXMAX), 10)+offset[i][1])/PIXXMAX
-  X = np.arange(0, int(CHIPXMAX), 10)+offset[i][1]
+#  xred = 2.0*(np.arange(0, int(CHIPXMAX), 10)+offset[i][1])/PIXXMAX
+#  X = np.arange(0, int(CHIPXMAX), 10)+offset[i][1]
+  xred = 2.0*(np.arange(-8552, 8472, 10))/PIXXMAX
+  X = np.arange(-8552, 8472, 10)
 
   # Now the same for y, yred and Y.
-  yred = 2.0*(np.arange(0, int(CHIPYMAX), 10)+offset[i][2])/PIXYMAX
-  Y = np.arange(0, int(CHIPYMAX), 10)+offset[i][2]
+#  yred = 2.0*(np.arange(0, int(CHIPYMAX), 10)+offset[i][2])/PIXYMAX
+#  Y = np.arange(0, int(CHIPYMAX), 10)+offset[i][2]
+  yred = 2.0*(np.arange(-8583, 8430, 10))/PIXYMAX
+  Y = np.arange(-8583, 8430, 10)
 
   # Creating the corresponding meshgrids.
   xxred, yyred = np.meshgrid(xred, yred)
   XX, YY = np.meshgrid(X, Y)
 
   # Calculating the position dependend residuals.
-  # - epswZPred:	residuals with chip zeropoints in resized chip coordinates (reduced data set),
-  #			for plotting
   # - epswoZP:		residuals without chip zeropoints in resized chip coordinates (reduced data set),
   #			for plotting
-  epswZPred = A * xxred**2 + B * yyred**2 + C * xxred * yyred + D * xxred + E * yyred + FCHIP
-  epswoZP = epswZPred - FCHIP
+  epswoZP = A * xxred**2 + B * yyred**2 + C * xxred * yyred + D * xxred + E * yyred
 
-  print("Finish calculating data for chip " + str(i+1) + "/" + str(NCHIPS) + "...")
-  
+  cond=(epswoZP.flatten())>-0.015
+  XXcond = (XX.flatten())[cond]
+  YYcond = (YY.flatten())[cond]
+  epscond = (epswoZP.flatten())[cond]
+
+  cond2=(epscond.flatten())<0.0
+  XXcond2 = (XXcond.flatten())[cond2]
+  YYcond2 = (YYcond.flatten())[cond2]
+  epscond2 = (epscond.flatten())[cond2]
+
+#  if len(epscond2) == 0:
+#	return(0,0)
+
+  centerx = (-E/C-2.0*B/C*((2.0*A*E-C*D)/(C*C-4.0*A*B)))*PIXXMAX/2.0
+  centery = ((2.0*A*E-C*D)/(C*C-4.0*A*B))*PIXYMAX/2.0
+
+  distance = np.sqrt(XXcond2*XXcond2+YYcond2*YYcond2)
+  maxdistance = np.amax(distance)
+  area = len(epscond2.flatten())*100
+  print(centerx,centery)
+  print(maxdistance, area)
+
+  a = np.amax(maxdistance)
+  b = area / (np.pi * a)
+  e = np.sqrt(a*a-b*b)
+  nume = e/a
+
+  print(a,b,e,nume)
+
   # Returning data for plotting.
-  return(XX, YY, epswoZP)
+  return(maxdistance, area)
 
 
 # Reading chip offsets from config file
@@ -174,7 +202,7 @@ offset = offset.reshape((-1,3))
 #get the number of CPUs / cores
 totalcpus = multiprocessing.cpu_count()
 #maxcpus = int((os.popen("echo ${NPARA}").readlines())[0])
-maxcpus = 2
+maxcpus = 4
 usedcpus = maxcpus
 
 # Use only as many cores as chips are avaiable
@@ -189,35 +217,31 @@ pool = multiprocessing.Pool(usedcpus)
 
 # execute the calculating with a 'pool-map' command:
 catlist = []
-for h in range(NCHIPS):
+#for h in range(NCHIPS):
+for h in range(1):
 	catlist.append(h)
 
-ALL = pool.map(calculatingeps, catlist)
-
+#ALL = pool.map(calculatingeps, catlist)
+pool.map(calculatingeps, catlist)
 
 # Split the returning "ALL" array from "calculatingeps" into components:
 # - XXALL:		X meshgrid of reduced chip coordinates
 # - YYALL:		Y meshgrid of reduced chip coordinates
 # - epswoZPALL:	residuals without chip zeropoint offsets for reduced chip coordinates
-XXALL = np.array([])
-YYALL = np.array([])
-epswoZPALL = np.array([])
+#maxdistance = np.array([])
+#area = np.array([])
 
 
-for i in range(NCHIPS):
-  XXALL = np.append(XXALL,ALL[i][0])
-  YYALL = np.append(YYALL,ALL[i][1])
-  epswoZPALL = np.append(epswoZPALL,ALL[i][2])
+#for i in range(NCHIPS):
+#  maxdistance = np.append(maxdistance,ALL[i][0])
+#  area = np.append(area,ALL[i][1])
 
-ALL = (np.array((XXALL, YYALL, epswoZPALL))).reshape((-1,3))
-#print(ALL)
+# Area = Pi * a * b with a is major axis and b is minor axis. a is given by maxdistance so for b: b = Area / (Pi * a)
+#a = np.amax(maxdistance)
+#totalarea = np.sum(area)
+#totalarea = area
+#b = totalarea / (np.pi * a)
+#e = np.sqrt(a*a-b*b)
 
-#epssmaller01 = np.abs(np.abs(epswoZPALL) - 0.1)
-#print(epssmaller01)
-#dtype = [('XXALL', '5f'), ('YYALL', '5f'), ('epssmaller01', '23f')]
-#print(dtype)
-#tosort = np.array(epssmaller01, dtype=dtype)
-#print(tosort)
-#np.sort(tosort, 'epssmaller01')
-
+#print (a,b,totalarea,e)
 
