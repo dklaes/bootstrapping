@@ -29,7 +29,7 @@ fcenters =  open(path + "results/results_centers.csv", "w")
 PREFACTORSINPUT = np.loadtxt(path + "/chip_all.dat", delimiter=" ", dtype={'names': ('factorname', 'equal', 'value', 'pm', 'error'), 'formats': ('S3', 'S1', 'S21', 'S2', 'S21')})
 
 PREFACTORS = np.array([])
-for j in range(NCHIPS):
+for j in range(5):
 	PREFACTORS = np.append(PREFACTORS, (float(PREFACTORSINPUT[j][2]), float(PREFACTORSINPUT[j][4])))
 	fprefactors.write("0 %.21f %.21f\n" %(float(PREFACTORSINPUT[j][2]),float(PREFACTORSINPUT[j][4])))
 PREFACTORS = PREFACTORS.reshape((-1,2))
