@@ -13,6 +13,10 @@ global offset
 global NCHIPS
 global CHIPXMAX
 global CHIPYMAX
+global LL
+global LR
+global UL
+global UR
 
 # Reading command line arguments
 path = sys.argv[1] + "/bootstrapping/"
@@ -22,8 +26,14 @@ NCHIPS = int(sys.argv[3])
 # Importing some global variables
 PIXXMAX = int((os.popen("echo ${CHIPGEOMETRY} | awk '{print $1}'").readlines())[0]) * int((os.popen("echo ${CHIPGEOMETRY} | awk '{print $3}'").readlines())[0])
 PIXYMAX = int((os.popen("echo ${CHIPGEOMETRY} | awk '{print $2}'").readlines())[0]) * int((os.popen("echo ${CHIPGEOMETRY} | awk '{print $4}'").readlines())[0])
-CHIPXMAX = float((os.popen("echo ${CHIPGEOMETRY} | awk '{print $3}'").readlines())[0])
-CHIPYMAX = float((os.popen("echo ${CHIPGEOMETRY} | awk '{print $4}'").readlines())[0])
+CHIPXMAX = int((os.popen("echo ${CHIPGEOMETRY} | awk '{print $3}'").readlines())[0])
+CHIPYMAX = int((os.popen("echo ${CHIPGEOMETRY} | awk '{print $4}'").readlines())[0])
+MAXCHIPX = int((os.popen("echo ${CHIPGEOMETRY} | awk '{print $1}'").readlines())[0])
+MAXCHIPY = int((os.popen("echo ${CHIPGEOMETRY} | awk '{print $2}'").readlines())[0])
+LL = np.array([int((os.popen("echo ${OFFSETX} | awk '{print $1}'").readlines())[0]), int((os.popen("echo ${OFFSETY} | awk '{print $1}'").readlines())[0])])
+LR = np.array([int((os.popen("echo ${OFFSETX} | awk '{print $" + str(MAXCHIPX) + "}'").readlines())[0]) + CHIPXMAX, int((os.popen("echo ${OFFSETY} | awk '{print $1}'").readlines())[0])])
+UL = np.array([int((os.popen("echo ${OFFSETX} | awk '{print $1}'").readlines())[0]), int((os.popen("echo ${OFFSETY} | awk '{print $" + str(MAXCHIPY*MAXCHIPX) + "}'").readlines())[0]) + CHIPYMAX])
+UR = np.array([int((os.popen("echo ${OFFSETX} | awk '{print $" + str(MAXCHIPX) + "}'").readlines())[0]) + CHIPXMAX, int((os.popen("echo ${OFFSETY} | awk '{print $" + str(MAXCHIPY*MAXCHIPX) + "}'").readlines())[0]) + CHIPYMAX])
 
 
 # Calculations for "true" solution
@@ -123,11 +133,11 @@ def calculatingeps(i):
   print("Calculating major and minor axis and (numerical) ellipticity for realisation " + str(i+1) + "...")
   
   # Getting the prefactors and calculate the center position.
-  A = float(((os.popen("cat " + path + "chip_all.dat | grep A | awk '{print $3}'").readlines())[0]).strip())
-  B = float(((os.popen("cat " + path + "chip_all.dat | grep B | awk '{print $3}'").readlines())[0]).strip())
-  C = float(((os.popen("cat " + path + "chip_all.dat | grep C | awk '{print $3}'").readlines())[0]).strip())
-  D = float(((os.popen("cat " + path + "chip_all.dat | grep D | awk '{print $3}'").readlines())[0]).strip())
-  E = float(((os.popen("cat " + path + "chip_all.dat | grep E | awk '{print $3}'").readlines())[0]).strip())
+  A = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep A | awk '{print $3}'").readlines())[0]).strip())
+  B = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep B | awk '{print $3}'").readlines())[0]).strip())
+  C = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep C | awk '{print $3}'").readlines())[0]).strip())
+  D = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep D | awk '{print $3}'").readlines())[0]).strip())
+  E = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep E | awk '{print $3}'").readlines())[0]).strip())
 
   centerx = (-E/C-2.0*B/C*((2.0*A*E-C*D)/(C*C-4.0*A*B)))*PIXXMAX/2.0
   centery = ((2.0*A*E-C*D)/(C*C-4.0*A*B))*PIXYMAX/2.0
@@ -141,11 +151,11 @@ def calculatingeps(i):
   # As soon as possible not longer needed arrays are deleted from memory, otherwise too much
   # memory is occupied.
 
-  xred = 2.0*(np.arange(-8552, 0, 1))/PIXXMAX
-  yred = 2.0*(np.arange(-8583, 0, 1))/PIXYMAX
+  # Bottom left part of the camera
+  xred = 2.0*(np.arange(LL[0], 0, 1))/PIXXMAX
+  yred = 2.0*(np.arange(LL[1], 0, 1))/PIXYMAX
 
   # Creating the corresponding meshgrids.
-  # Bottom left part of the camera
   xxred, yyred = np.meshgrid(xred, yred)
   del xred
   del yred
@@ -157,8 +167,8 @@ def calculatingeps(i):
   del yyred
 
   cond=(epswoZP.flatten())>-0.015
-  X = np.arange(-8552, 0, 1)
-  Y = np.arange(-8583, 0, 1)
+  X = np.arange(LL[0], 0, 1)
+  Y = np.arange(LL[1], 0, 1)
   XX, YY = np.meshgrid(X, Y)
   del X
   del Y
@@ -183,10 +193,13 @@ def calculatingeps(i):
   maxdistance = np.append(maxdistance, np.amax(distance))
   area = np.append(area, len(epscond2.flatten()))
 
+  del XXcond2
+  del YYcond2
+  del epscond2
 
   # Bottom right part of the camera.
-  xred = 2.0*(np.arange(0, 8472, 1))/PIXXMAX
-  yred = 2.0*(np.arange(-8583, 0, 1))/PIXYMAX
+  xred = 2.0*(np.arange(0, LR[0], 1))/PIXXMAX
+  yred = 2.0*(np.arange(LR[1], 0, 1))/PIXYMAX
   # Creating the corresponding meshgrids.
   xxred, yyred = np.meshgrid(xred, yred)
   del xred
@@ -199,8 +212,8 @@ def calculatingeps(i):
   del yyred
 
   cond=(epswoZP.flatten())>-0.015
-  X = np.arange(0, 8472, 1)
-  Y = np.arange(-8583, 0, 1)
+  X = np.arange(0, LR[0], 1)
+  Y = np.arange(LR[1], 0, 1)
   XX, YY = np.meshgrid(X, Y)
   del X
   del Y
@@ -224,11 +237,15 @@ def calculatingeps(i):
   distance = np.sqrt(XXcond2*XXcond2+YYcond2*YYcond2)
   maxdistance = np.append(maxdistance, np.amax(distance))
   area = np.append(area, len(epscond2.flatten()))
+
+  del XXcond2
+  del YYcond2
+  del epscond2
 
 
   # Upper left part of the camera.
-  xred = 2.0*(np.arange(-8552, 0, 1))/PIXXMAX
-  yred = 2.0*(np.arange(0, 8430, 1))/PIXYMAX
+  xred = 2.0*(np.arange(UL[0], 0, 1))/PIXXMAX
+  yred = 2.0*(np.arange(0, UL[1], 1))/PIXYMAX
   # Creating the corresponding meshgrids.
   xxred, yyred = np.meshgrid(xred, yred)
   # Calculating the position dependend residuals.
@@ -239,8 +256,8 @@ def calculatingeps(i):
   del yyred
 
   cond=(epswoZP.flatten())>-0.015
-  X = np.arange(-8552, 0, 1)
-  Y = np.arange(0, 8430, 1)
+  X = np.arange(UL[0], 0, 1)
+  Y = np.arange(0, UL[1], 1)
   XX, YY = np.meshgrid(X, Y)
   del X
   del Y
@@ -265,10 +282,14 @@ def calculatingeps(i):
   maxdistance = np.append(maxdistance, np.amax(distance))
   area = np.append(area, len(epscond2.flatten()))
 
+  del XXcond2
+  del YYcond2
+  del epscond2
+
 
   # Upper right part of the camera.
-  xred = 2.0*(np.arange(0, 8472, 1))/PIXXMAX
-  yred = 2.0*(np.arange(0, 8430, 1))/PIXYMAX
+  xred = 2.0*(np.arange(0, UR[0], 1))/PIXXMAX
+  yred = 2.0*(np.arange(0, UR[1], 1))/PIXYMAX
   # Creating the corresponding meshgrids.
   xxred, yyred = np.meshgrid(xred, yred)
   del xred
@@ -281,8 +302,8 @@ def calculatingeps(i):
   del yyred
 
   cond=(epswoZP.flatten())>-0.015
-  X = np.arange(0, 8472, 1)
-  Y = np.arange(0, 8430, 1)
+  X = np.arange(0, UR[0], 1)
+  Y = np.arange(0, UR[1], 1)
   XX, YY = np.meshgrid(X, Y)
   del X
   del Y
@@ -306,6 +327,10 @@ def calculatingeps(i):
   distance = np.sqrt(XXcond2*XXcond2+YYcond2*YYcond2)
   maxdistance = np.append(maxdistance, np.amax(distance))
   area = np.append(area, len(epscond2.flatten()))
+
+  del XXcond2
+  del YYcond2
+  del epscond2
 
 
   maxdistancefinal = np.amax(maxdistance)
