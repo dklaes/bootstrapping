@@ -25,19 +25,12 @@ fresiduals = open(path + "results/results_residuals.csv", "w")
 fprefactors = open(path + "results/results_prefactors.csv", "w")
 fcenters =  open(path + "results/results_centers.csv", "w")
 
-
-PREFACTORSINPUT = np.loadtxt(path + "/chip_all.dat", delimiter=" ", dtype={'names': ('factorname', 'equal', 'value', 'pm', 'error'), 'formats': ('S3', 'S1', 'S21', 'S2', 'S21')})
-
-PREFACTORS = np.array([])
-for j in range(5):
-	PREFACTORS = np.append(PREFACTORS, (float(PREFACTORSINPUT[j][2]), float(PREFACTORSINPUT[j][4])))
-	fprefactors.write("0 %.21f %.21f\n" %(float(PREFACTORSINPUT[j][2]),float(PREFACTORSINPUT[j][4])))
-PREFACTORS = PREFACTORS.reshape((-1,2))
-A = PREFACTORS[0][0]
-B = PREFACTORS[1][0]
-C = PREFACTORS[2][0]
-D = PREFACTORS[3][0]
-E = PREFACTORS[4][0]
+# Getting the prefactors.
+A = float(((os.popen("cat " + path + "/chip_all.dat | grep A | awk '{print $3}'").readlines())[0]).strip())
+B = float(((os.popen("cat " + path + "/chip_all.dat | grep B | awk '{print $3}'").readlines())[0]).strip())
+C = float(((os.popen("cat " + path + "/chip_all.dat | grep C | awk '{print $3}'").readlines())[0]).strip())
+D = float(((os.popen("cat " + path + "/chip_all.dat | grep D | awk '{print $3}'").readlines())[0]).strip())
+E = float(((os.popen("cat " + path + "/chip_all.dat | grep E | awk '{print $3}'").readlines())[0]).strip())
 
 centerx = (-E/C-2.0*B/C*((2.0*A*E-C*D)/(C*C-4.0*A*B)))*PIXXMAX/2.0
 centery = ((2.0*A*E-C*D)/(C*C-4.0*A*B))*PIXYMAX/2.0
@@ -91,6 +84,14 @@ for i in range(NREL):
 	C = PREFACTORS[2][0]
 	D = PREFACTORS[3][0]
 	E = PREFACTORS[4][0]
+
+  # Getting the prefactors.
+  A = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep A | awk '{print $3}'").readlines())[0]).strip())
+  B = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep B | awk '{print $3}'").readlines())[0]).strip())
+  C = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep C | awk '{print $3}'").readlines())[0]).strip())
+  D = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/"chip_all.dat | grep D | awk '{print $3}'").readlines())[0]).strip())
+  E = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep E | awk '{print $3}'").readlines())[0]).strip())
+
 
 	centerx = (-E/C-2.0*B/C*((2.0*A*E-C*D)/(C*C-4.0*A*B)))*PIXXMAX/2.0
 	centery = ((2.0*A*E-C*D)/(C*C-4.0*A*B))*PIXYMAX/2.0
