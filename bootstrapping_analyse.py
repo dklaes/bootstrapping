@@ -129,7 +129,7 @@ fcenterprop.close()
 
 
 # Analysis of ellipse shape
-def calculatingeps(i):
+def calculatingeps(i, coordinates):
   print("Calculating major and minor axis and (numerical) ellipticity for realisation " + str(i+1) + "...")
   
   # Getting the prefactors and calculate the center position.
@@ -151,187 +151,51 @@ def calculatingeps(i):
   # As soon as possible not longer needed arrays are deleted from memory, otherwise too much
   # memory is occupied.
 
-  # Bottom left part of the camera
-  xred = 2.0*(np.arange(LL[0], 0, 1))/PIXXMAX
-  yred = 2.0*(np.arange(LL[1], 0, 1))/PIXYMAX
+  for k in range(len(coordinates)):
+	xred = 2.0*(np.arange(coordinates[k][0], coordinates[k][1], 1))/PIXXMAX
+	yred = 2.0*(np.arange(coordinates[k][2], coordinates[k][3], 1))/PIXYMAX
 
-  # Creating the corresponding meshgrids.
-  xxred, yyred = np.meshgrid(xred, yred)
-  del xred
-  del yred
-  # Calculating the position dependend residuals.
-  # - epswoZP:		residuals without chip zeropoints in resized chip coordinates (reduced data set),
-  #			for plotting
-  epswoZP = A * xxred**2 + B * yyred**2 + C * xxred * yyred + D * xxred + E * yyred
-  del xxred
-  del yyred
+	# Creating the corresponding meshgrids.
+	xxred, yyred = np.meshgrid(xred, yred)
+	del xred
+	del yred
+	# Calculating the position dependend residuals.
+	# - epswoZP:		residuals without chip zeropoints in resized chip coordinates (reduced data set),
+	#			for plotting
+	epswoZP = A * xxred**2 + B * yyred**2 + C * xxred * yyred + D * xxred + E * yyred
+	del xxred
+	del yyred
 
-  cond=(epswoZP.flatten())>-0.015
-  X = np.arange(LL[0], 0, 1)
-  Y = np.arange(LL[1], 0, 1)
-  XX, YY = np.meshgrid(X, Y)
-  del X
-  del Y
-  XXcond = (XX.flatten())[cond]
-  del XX
-  YYcond = (YY.flatten())[cond]
-  del YY
-  epscond = (epswoZP.flatten())[cond]
-  del epswoZP
-  del cond
+	cond=(epswoZP.flatten())>-0.015
+	X = np.arange(coordinates[k][0], coordinates[k][1], 1)
+	Y = np.arange(coordinates[k][2], coordinates[k][3], 1)
+	XX, YY = np.meshgrid(X, Y)
+	del X
+	del Y
+	XXcond = (XX.flatten())[cond]
+	del XX
+	YYcond = (YY.flatten())[cond]
+	del YY
+	epscond = (epswoZP.flatten())[cond]
+	del epswoZP
+	del cond
 
-  cond2=(epscond.flatten())<0.0
-  XXcond2 = (XXcond.flatten())[cond2]
-  del XXcond
-  YYcond2 = (YYcond.flatten())[cond2]
-  del YYcond
-  epscond2 = (epscond.flatten())[cond2]
-  del epscond
-  del cond2
+	cond2=(epscond.flatten())<0.0
+	XXcond2 = (XXcond.flatten())[cond2]
+	del XXcond
+	YYcond2 = (YYcond.flatten())[cond2]
+	del YYcond
+	epscond2 = (epscond.flatten())[cond2]
+	del epscond
+	del cond2
 
-  distance = np.sqrt(XXcond2*XXcond2+YYcond2*YYcond2)
-  maxdistance = np.append(maxdistance, np.amax(distance))
-  area = np.append(area, len(epscond2.flatten()))
+	distance = np.sqrt(XXcond2*XXcond2+YYcond2*YYcond2)
+	maxdistance = np.append(maxdistance, np.amax(distance))
+	area = np.append(area, len(epscond2.flatten()))
 
-  del XXcond2
-  del YYcond2
-  del epscond2
-
-  # Bottom right part of the camera.
-  xred = 2.0*(np.arange(0, LR[0], 1))/PIXXMAX
-  yred = 2.0*(np.arange(LR[1], 0, 1))/PIXYMAX
-  # Creating the corresponding meshgrids.
-  xxred, yyred = np.meshgrid(xred, yred)
-  del xred
-  del yred
-  # Calculating the position dependend residuals.
-  # - epswoZP:		residuals without chip zeropoints in resized chip coordinates (reduced data set),
-  #			for plotting
-  epswoZP = A * xxred**2 + B * yyred**2 + C * xxred * yyred + D * xxred + E * yyred
-  del xxred
-  del yyred
-
-  cond=(epswoZP.flatten())>-0.015
-  X = np.arange(0, LR[0], 1)
-  Y = np.arange(LR[1], 0, 1)
-  XX, YY = np.meshgrid(X, Y)
-  del X
-  del Y
-  XXcond = (XX.flatten())[cond]
-  del XX
-  YYcond = (YY.flatten())[cond]
-  del YY
-  epscond = (epswoZP.flatten())[cond]
-  del epswoZP
-  del cond
-
-  cond2=(epscond.flatten())<0.0
-  XXcond2 = (XXcond.flatten())[cond2]
-  del XXcond
-  YYcond2 = (YYcond.flatten())[cond2]
-  del YYcond
-  epscond2 = (epscond.flatten())[cond2]
-  del epscond
-  del cond2
-
-  distance = np.sqrt(XXcond2*XXcond2+YYcond2*YYcond2)
-  maxdistance = np.append(maxdistance, np.amax(distance))
-  area = np.append(area, len(epscond2.flatten()))
-
-  del XXcond2
-  del YYcond2
-  del epscond2
-
-
-  # Upper left part of the camera.
-  xred = 2.0*(np.arange(UL[0], 0, 1))/PIXXMAX
-  yred = 2.0*(np.arange(0, UL[1], 1))/PIXYMAX
-  # Creating the corresponding meshgrids.
-  xxred, yyred = np.meshgrid(xred, yred)
-  # Calculating the position dependend residuals.
-  # - epswoZP:		residuals without chip zeropoints in resized chip coordinates (reduced data set),
-  #			for plotting
-  epswoZP = A * xxred**2 + B * yyred**2 + C * xxred * yyred + D * xxred + E * yyred
-  del xxred
-  del yyred
-
-  cond=(epswoZP.flatten())>-0.015
-  X = np.arange(UL[0], 0, 1)
-  Y = np.arange(0, UL[1], 1)
-  XX, YY = np.meshgrid(X, Y)
-  del X
-  del Y
-  XXcond = (XX.flatten())[cond]
-  del XX
-  YYcond = (YY.flatten())[cond]
-  del YY
-  epscond = (epswoZP.flatten())[cond]
-  del epswoZP
-  del cond
-
-  cond2=(epscond.flatten())<0.0
-  XXcond2 = (XXcond.flatten())[cond2]
-  del XXcond
-  YYcond2 = (YYcond.flatten())[cond2]
-  del YYcond
-  epscond2 = (epscond.flatten())[cond2]
-  del epscond
-  del cond2
-
-  distance = np.sqrt(XXcond2*XXcond2+YYcond2*YYcond2)
-  maxdistance = np.append(maxdistance, np.amax(distance))
-  area = np.append(area, len(epscond2.flatten()))
-
-  del XXcond2
-  del YYcond2
-  del epscond2
-
-
-  # Upper right part of the camera.
-  xred = 2.0*(np.arange(0, UR[0], 1))/PIXXMAX
-  yred = 2.0*(np.arange(0, UR[1], 1))/PIXYMAX
-  # Creating the corresponding meshgrids.
-  xxred, yyred = np.meshgrid(xred, yred)
-  del xred
-  del yred
-  # Calculating the position dependend residuals.
-  # - epswoZP:		residuals without chip zeropoints in resized chip coordinates (reduced data set),
-  #			for plotting
-  epswoZP = A * xxred**2 + B * yyred**2 + C * xxred * yyred + D * xxred + E * yyred
-  del xxred
-  del yyred
-
-  cond=(epswoZP.flatten())>-0.015
-  X = np.arange(0, UR[0], 1)
-  Y = np.arange(0, UR[1], 1)
-  XX, YY = np.meshgrid(X, Y)
-  del X
-  del Y
-  XXcond = (XX.flatten())[cond]
-  del XX
-  YYcond = (YY.flatten())[cond]
-  del YY
-  epscond = (epswoZP.flatten())[cond]
-  del epswoZP
-  del cond
-
-  cond2=(epscond.flatten())<0.0
-  XXcond2 = (XXcond.flatten())[cond2]
-  del XXcond
-  YYcond2 = (YYcond.flatten())[cond2]
-  del YYcond
-  epscond2 = (epscond.flatten())[cond2]
-  del epscond
-  del cond2
-
-  distance = np.sqrt(XXcond2*XXcond2+YYcond2*YYcond2)
-  maxdistance = np.append(maxdistance, np.amax(distance))
-  area = np.append(area, len(epscond2.flatten()))
-
-  del XXcond2
-  del YYcond2
-  del epscond2
-
+	del XXcond2
+	del YYcond2
+	del epscond2
 
   maxdistancefinal = np.amax(maxdistance)
   areafinal = np.sum(area)
@@ -350,6 +214,19 @@ def calculatingeps(i):
   print("Numerical ellipticity: " + str(nume))
 
 
+coordinates = np.array([])
+# Bottom left part of the camera
+coordinates = np.append(coordinates, (LL[0],0,LL[1],0))
+# Bottom right part of the camera.
+coordinates = np.append(coordinates, (0,LR[0],LR[1],0))
+# Upper left part of the camera.
+coordinates = np.append(coordinates, (UL[0],0,0,UL[1]))
+# Upper right part of the camera.
+coordinates = np.append(coordinates, (0,UR[0],0,UR[1]))
+
+coordinates = coordinates.reshape((-1,4))
+
+
 for i in range(NREL):
-	calculatingeps(i)
+	calculatingeps(i, coordinates)
 
