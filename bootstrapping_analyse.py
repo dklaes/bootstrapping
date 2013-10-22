@@ -144,6 +144,9 @@ def calculatingeps(i, coordinates):
 
   maxdistance = np.array([])
   area = np.array([])
+  x = np.array([])
+  y = np.array([])
+  eps = np.array([])
 
   # Creating arrays for xred (reduced and resized chip coordinates (for plotting and
   # numerical reasons)) and X (reduced (for plotting)). Having xred and X seperated doesn't
@@ -193,6 +196,10 @@ def calculatingeps(i, coordinates):
 	maxdistance = np.append(maxdistance, np.amax(distance))
 	area = np.append(area, len(epscond2.flatten()))
 
+	x = np.append(x, XXcond2[distance==maxdistance[k]])
+	y = np.append(y, YYcond2[distance==maxdistance[k]])
+	eps = np.append(eps, epscond2[distance==maxdistance[k]])
+
 	del XXcond2
 	del YYcond2
 	del epscond2
@@ -208,10 +215,19 @@ def calculatingeps(i, coordinates):
   e = np.sqrt(a*a-b*b)
   nume = e/a
 
+  Xmax = x[maxdistance == maxdistancefinal][0]
+  Ymax = y[maxdistance == maxdistancefinal][0]
+  angle = np.arcsin((Xmax-centerx)/maxdistancefinal) * 180 / np.pi
+
   print("Length of major axis: " + str(a))
   print("Length of minor axis: " + str(b))
+  print("Angle between (0,y) and major axis: " + str(angle))
   print("Ellipticity: " + str(e))
-  print("Numerical ellipticity: " + str(nume))
+  print("Numerical ellipticity: " + str(nume) + "\n")
+
+  fellipse.write("%i %f %f %f %f %f\n" %(i+1, a, b, e, nume, angle))
+
+  
 
 
 coordinates = np.array([])
@@ -226,6 +242,7 @@ coordinates = np.append(coordinates, (0,UR[0],0,UR[1]))
 
 coordinates = coordinates.reshape((-1,4))
 
+fellipse = open(path + "results/results_ellipses.csv", "w")
 
 for i in range(NREL):
 	calculatingeps(i, coordinates)
