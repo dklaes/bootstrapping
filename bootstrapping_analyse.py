@@ -39,6 +39,7 @@ UR = np.array([int((os.popen("echo ${OFFSETX} | awk '{print $" + str(MAXCHIPX) +
 # Calculations for "true" solution
 fresiduals = open(path + "results/results_residuals.csv", "w")
 fcenters =  open(path + "results/results_centers.csv", "w")
+fprefactors = open(path + "results/results_prefactors.csv", "w")
 
 # Getting the prefactors of the true solution.
 A = float(((os.popen("cat " + path + "/chip_all.dat | grep A | awk '{print $3}'").readlines())[0]).strip())
@@ -46,6 +47,39 @@ B = float(((os.popen("cat " + path + "/chip_all.dat | grep B | awk '{print $3}'"
 C = float(((os.popen("cat " + path + "/chip_all.dat | grep C | awk '{print $3}'").readlines())[0]).strip())
 D = float(((os.popen("cat " + path + "/chip_all.dat | grep D | awk '{print $3}'").readlines())[0]).strip())
 E = float(((os.popen("cat " + path + "/chip_all.dat | grep E | awk '{print $3}'").readlines())[0]).strip())
+F1 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F1 | awk '{print $3}'").readlines())[0]).strip())
+F2 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F2 | awk '{print $3}'").readlines())[0]).strip())
+F3 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F3 | awk '{print $3}'").readlines())[0]).strip())
+F4 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F4 | awk '{print $3}'").readlines())[0]).strip())
+F5 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F5 | awk '{print $3}'").readlines())[0]).strip())
+F6 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F6 | awk '{print $3}'").readlines())[0]).strip())
+F7 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F7 | awk '{print $3}'").readlines())[0]).strip())
+F8 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F8 | awk '{print $3}'").readlines())[0]).strip())
+F9 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F9 | awk '{print $3}'").readlines())[0]).strip())
+F10 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F10 | awk '{print $3}'").readlines())[0]).strip())
+F11 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F11 | awk '{print $3}'").readlines())[0]).strip())
+F12 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F12 | awk '{print $3}'").readlines())[0]).strip())
+F13 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F13 | awk '{print $3}'").readlines())[0]).strip())
+F14 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F14 | awk '{print $3}'").readlines())[0]).strip())
+F15 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F15 | awk '{print $3}'").readlines())[0]).strip())
+F16 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F16 | awk '{print $3}'").readlines())[0]).strip())
+F17 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F17 | awk '{print $3}'").readlines())[0]).strip())
+F18 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F18 | awk '{print $3}'").readlines())[0]).strip())
+F19 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F19 | awk '{print $3}'").readlines())[0]).strip())
+F20 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F20 | awk '{print $3}'").readlines())[0]).strip())
+F21 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F21 | awk '{print $3}'").readlines())[0]).strip())
+F22 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F22 | awk '{print $3}'").readlines())[0]).strip())
+F23 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F23 | awk '{print $3}'").readlines())[0]).strip())
+F24 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F24 | awk '{print $3}'").readlines())[0]).strip())
+F25 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F25 | awk '{print $3}'").readlines())[0]).strip())
+F26 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F26 | awk '{print $3}'").readlines())[0]).strip())
+F27 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F27 | awk '{print $3}'").readlines())[0]).strip())
+F28 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F28 | awk '{print $3}'").readlines())[0]).strip())
+F29 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F29 | awk '{print $3}'").readlines())[0]).strip())
+F30 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F30 | awk '{print $3}'").readlines())[0]).strip())
+F31 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F31 | awk '{print $3}'").readlines())[0]).strip())
+F32 = float(((os.popen("cat " + path + "/chip_all.dat | grep -m1 F32 | awk '{print $3}'").readlines())[0]).strip())
+fprefactors.write("0 %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n" %(A, B, C, D, E, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24, F25, F26, F27, F28, F29, F30, F31, F32))
 
 # Calculating the "true" center and write it into a file. The "true" solution is written as realisation 0.
 centerx = (-E/C-2.0*B/C*((2.0*A*E-C*D)/(C*C-4.0*A*B)))*PIXXMAX/2.0
@@ -87,7 +121,7 @@ for i in range(NREL):
 	maximumafterALLCHIPS = np.amax(resafterALLCHIPS)
 	meanafterALLCHIPS = np.mean(resafterALLCHIPS)
 
-	fresiduals.write("%i 0 %f %f %f %f %f %f %f %f\n" %(i+1,sigmabeforeALLCHIPS,sigmaafterALLCHIPS,minimumbeforeALLCHIPS,minimumafterALLCHIPS,maximumbeforeALLCHIPS,maximumafterALLCHIPS,meanbeforeALLCHIPS,meanafterALLCHIPS))
+	fresiduals.write("%i 0 %f %f %f %f %f %f %f %f\n" %(i+1, sigmabeforeALLCHIPS, sigmaafterALLCHIPS, minimumbeforeALLCHIPS, minimumafterALLCHIPS, maximumbeforeALLCHIPS, maximumafterALLCHIPS, meanbeforeALLCHIPS, meanafterALLCHIPS))
 
 	# Getting the prefactors and center position for one realisation.
 	A = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep A | awk '{print $3}'").readlines())[0]).strip())
@@ -95,6 +129,39 @@ for i in range(NREL):
 	C = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep C | awk '{print $3}'").readlines())[0]).strip())
 	D = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep D | awk '{print $3}'").readlines())[0]).strip())
 	E = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep E | awk '{print $3}'").readlines())[0]).strip())
+	F1 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F1 | awk '{print $3}'").readlines())[0]).strip())
+	F2 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F2 | awk '{print $3}'").readlines())[0]).strip())
+	F3 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F3 | awk '{print $3}'").readlines())[0]).strip())
+	F4 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F4 | awk '{print $3}'").readlines())[0]).strip())
+	F5 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F5 | awk '{print $3}'").readlines())[0]).strip())
+	F6 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F6 | awk '{print $3}'").readlines())[0]).strip())
+	F7 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F7 | awk '{print $3}'").readlines())[0]).strip())
+	F8 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F8 | awk '{print $3}'").readlines())[0]).strip())
+	F9 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F9 | awk '{print $3}'").readlines())[0]).strip())
+	F10 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F10 | awk '{print $3}'").readlines())[0]).strip())
+	F11 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F11 | awk '{print $3}'").readlines())[0]).strip())
+	F12 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F12 | awk '{print $3}'").readlines())[0]).strip())
+	F13 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F13 | awk '{print $3}'").readlines())[0]).strip())
+	F14 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F14 | awk '{print $3}'").readlines())[0]).strip())
+	F15 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F15 | awk '{print $3}'").readlines())[0]).strip())
+	F16 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F16 | awk '{print $3}'").readlines())[0]).strip())
+	F17 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F17 | awk '{print $3}'").readlines())[0]).strip())
+	F18 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F18 | awk '{print $3}'").readlines())[0]).strip())
+	F19 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F19 | awk '{print $3}'").readlines())[0]).strip())
+	F20 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F20 | awk '{print $3}'").readlines())[0]).strip())
+	F21 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F21 | awk '{print $3}'").readlines())[0]).strip())
+	F22 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F22 | awk '{print $3}'").readlines())[0]).strip())
+	F23 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F23 | awk '{print $3}'").readlines())[0]).strip())
+	F24 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F24 | awk '{print $3}'").readlines())[0]).strip())
+	F25 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F25 | awk '{print $3}'").readlines())[0]).strip())
+	F26 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F26 | awk '{print $3}'").readlines())[0]).strip())
+	F27 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F27 | awk '{print $3}'").readlines())[0]).strip())
+	F28 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F28 | awk '{print $3}'").readlines())[0]).strip())
+	F29 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F29 | awk '{print $3}'").readlines())[0]).strip())
+	F30 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F30 | awk '{print $3}'").readlines())[0]).strip())
+	F31 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F31 | awk '{print $3}'").readlines())[0]).strip())
+	F32 = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep -m1   F32 | awk '{print $3}'").readlines())[0]).strip())
+	fprefactors.write("%i %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n" %(i+1, A, B, C, D, E, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24, F25, F26, F27, F28, F29, F30, F31, F32))
 
 	centerx = (-E/C-2.0*B/C*((2.0*A*E-C*D)/(C*C-4.0*A*B)))*PIXXMAX/2.0
 	centery = ((2.0*A*E-C*D)/(C*C-4.0*A*B))*PIXYMAX/2.0
@@ -102,6 +169,7 @@ for i in range(NREL):
 
 fresiduals.close()
 fcenters.close()
+fprefactors.close()
 
 centers = np.fromfile(path + "/results/results_centers.csv", sep="\t").reshape((-1,3))
 
@@ -138,6 +206,7 @@ def calculatingeps(i, coordinates):
   C = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep C | awk '{print $3}'").readlines())[0]).strip())
   D = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep D | awk '{print $3}'").readlines())[0]).strip())
   E = float(((os.popen("cat " + path + "/realisation_" + str(i+1) + "/chip_all.dat | grep E | awk '{print $3}'").readlines())[0]).strip())
+
 
   centerx = (-E/C-2.0*B/C*((2.0*A*E-C*D)/(C*C-4.0*A*B)))*PIXXMAX/2.0
   centery = ((2.0*A*E-C*D)/(C*C-4.0*A*B))*PIXYMAX/2.0
