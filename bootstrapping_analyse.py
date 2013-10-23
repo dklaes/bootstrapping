@@ -7,6 +7,7 @@ import numpy as np
 import sys
 import os
 import multiprocessing
+from scipy.optimize import curve_fit
 
 # Defining global variables
 global offset
@@ -316,3 +317,80 @@ fellipse = open(path + "results/results_ellipses.csv", "w")
 for i in range(NREL):
 	calculatingeps(i, coordinates)
 
+fellipse.close()
+
+
+
+
+
+
+
+
+
+
+
+# Magnitude - residual dependency
+
+def function_linear_plusOffset(x, A, B):
+	return A*x + B
+
+def function_linear(x, A):
+	return A*x
+
+fmagdependency = open(path + "results/results_magdependency.csv", "w")
+
+for i in range(NREL):
+
+	a = np.array([])
+	b = np.array([])
+	c = np.array([])
+	d = np.array([])
+	for k in range(NCHIPS):
+		# Importing catalogues.
+		a = np.fromfile(path + "/realisation_" + str(i+1) + "/chip_%i.csv" %(k+1), sep="\t")
+		b = np.append(b,a)
+		c = a.reshape((-1,15))
+
+		# Linear fit with offset before illumination correction
+		p0 = np.array([0.0, 0.0])
+		best_par_before_Offset, cov_fit_before_Offset = curve_fit(function_linear_plusOffset, c[:,14], c[:,6], p0, sigma=np.std(c[:,6]))
+
+		# Linear fit with offset after illumination correction
+		p0 = np.array([0.0, 0.0])
+		best_par_after_Offset, cov_fit_after_Offset = curve_fit(function_linear_plusOffset, c[:,9], c[:,10], p0, sigma=np.std(c[:,10]))
+
+		# Linear fit without offset before illumination correction
+		p0 = np.array([0.0])
+		best_par_before_withoutOffset, cov_fit_before_withoutOffset = curve_fit(function_linear, c[:,14], c[:,6], p0, sigma=np.std(c[:,6]))
+
+		# Linear fit without offset after illumination correction
+		p0 = np.array([0.0])
+		best_par_after_withoutOffset, cov_fit_after_withoutOffset = curve_fit(function_linear, c[:,9], c[:,10], p0, sigma=np.std(c[:,10]))
+
+		# Writing to file
+		# Format: realisation chip A_before_Offset B_before_Offset A_after_Offset B_after_Offset A_before_withoutOffset A_after_withoutOffset
+		fmagdependency.write("%i %i %f %f %f %f %f %f\n" %(i+1, k+1, best_par_before_Offset[0], best_par_before_Offset[1], best_par_after_Offset[0], best_par_after_Offset[1], best_par_before_withoutOffset[0], best_par_after_withoutOffset[0]))
+
+	d = b.reshape((-1,15))
+
+	# Linear fit with offset before illumination correction
+	p0 = np.array([0.0, 0.0])
+	best_par_before_Offset, cov_fit_before_Offset = curve_fit(function_linear_plusOffset, d[:,14], d[:,6], p0, sigma=np.std(d[:,6]))
+
+	# Linear fit with offset after illumination correction
+	p0 = np.array([0.0, 0.0])
+	best_par_after_Offset, cov_fit_after_Offset = curve_fit(function_linear_plusOffset, d[:,9], d[:,10], p0, sigma=np.std(d[:,10]))
+
+	# Linear fit without offset before illumination correction
+	p0 = np.array([0.0])
+	best_par_before_withoutOffset, cov_fit_before_withoutOffset = curve_fit(function_linear, d[:,14], d[:,6], p0, sigma=np.std(d[:,6]))
+
+	# Linear fit without offset after illumination correction
+	p0 = np.array([0.0])
+	best_par_after_withoutOffset, cov_fit_after_withoutOffset = curve_fit(function_linear, d[:,9], d[:,10], p0, sigma=np.std(d[:,10]))
+
+	# Writing to file
+	# Format: realisation chip=0(ALL) A_before_Offset B_before_Offset A_after_Offset B_after_Offset A_before_withoutOffset A_after_withoutOffset
+	fmagdependency.write("%i 0 %f %f %f %f %f %f\n" %(i+1, best_par_before_Offset[0], best_par_before_Offset[1], best_par_after_Offset[0], best_par_after_Offset[1], best_par_before_withoutOffset[0], best_par_after_withoutOffset[0]))
+
+fmagdependency.close()
