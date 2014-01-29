@@ -6,7 +6,7 @@ RUN=$2
 cd ${MAIND}/${RUN}/bootstrapping
 mkdir /media/BACKUP/bootstrapping_with_error/${RUN}
 
-for FOLDER in `ls ${MAIND}`
+for FOLDER in `ls`
 do
 	echo ${FOLDER}
 	tar -czf /media/BACKUP/bootstrapping_with_error/${RUN}/${FOLDER}.tar.gz ${FOLDER}
