@@ -25,23 +25,23 @@ else
   echo ""
 fi
 
-echo "Universe   = vanilla" > submit
-echo "Executable = /vol/users/users/dklaes/git/bootstrapping/bootstrapping.sh" >> submit
-echo "transfer_input_files = /vol/users/users/dklaes/git/bootstrapping/ldac.py" >> submit
-echo "initialdir     = /vol/users/users/dklaes/git/bootstrapping" >> submit
-echo "remote_initialdir     = /vol/users/users/dklaes/git/bootstrapping" >> submit
-echo 'Requirements = (Memory > 1500)' >> submit
-echo "" >> submit
+echo "Universe   = vanilla" > ${MAIND}/submit
+echo "Executable = /vol/users/users/dklaes/git/bootstrapping/bootstrapping.sh" >> ${MAIND}/submit
+echo "transfer_input_files = /vol/users/users/dklaes/git/bootstrapping/ldac.py" >> ${MAIND}/submit
+echo "initialdir     = /vol/users/users/dklaes/git/bootstrapping" >> ${MAIND}/submit
+echo "remote_initialdir     = /vol/users/users/dklaes/git/bootstrapping" >> ${MAIND}/submit
+echo 'Requirements = (Memory > 1500)' >> ${MAIND}/submit
+echo "" >> ${MAIND}/submit
 
 i=${NRELSTART}
 while [ ${i} -le ${NRELSTOP} ]
 do
- echo "Arguments  = ${MAIND} ${i}" >> submit
- echo "Log        = ${MAIND}/log/realisation_${i}.log" >> submit
- echo "Output     = ${MAIND}/output/realisation_${i}.out" >> submit
- echo "Error      = ${MAIND}/error/realisation_${i}.err" >> submit
- echo "Queue" >> submit
- echo "" >> submit
+ echo "Arguments  = ${MAIND} ${i}" >> ${MAIND}/submit
+ echo "Log        = ${MAIND}/log/realisation_${i}.log" >> ${MAIND}/submit
+ echo "Output     = ${MAIND}/output/realisation_${i}.out" >> ${MAIND}/submit
+ echo "Error      = ${MAIND}/error/realisation_${i}.err" >> ${MAIND}/submit
+ echo "Queue" >> ${MAIND}/submit
+ echo "" >> ${MAIND}/submit
   
   i=$(( $i + 1 ))
 done
