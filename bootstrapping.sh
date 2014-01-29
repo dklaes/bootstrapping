@@ -1,108 +1,35 @@
 #!/bin/bash
-
-# Bootstrapping script
+# New bootstrapping script
 
 # $1 = main directory where the files are
-# $2 = number of chips
-# $3 = destination directory
-# $4 = number of realisations
-
-# including some important files
-# # # . ${INSTRUMENT:?}.ini
-. /vol/euclid1/euclid1_raid1/dklaes/reduce_KIDS_1.7.6/OMEGACAM.ini
-. /vol/euclid1/euclid1_raid1/dklaes/reduce_KIDS_1.7.6/bash_functions.include
-. /vol/euclid1/euclid1_raid1/dklaes/reduce_KIDS_1.7.6/progs.ini
+# $2 = number of realisation
 
 MAIND=$1
-NCHIPS=$2
-NREL=$3
+NUMREL=$2
+FILTER=r
 
-PIXXMAX=`echo ${CHIPGEOMETRY} | ${P_GAWK} '{print $1*$3}'`
-PIXYMAX=`echo ${CHIPGEOMETRY} | ${P_GAWK} '{print $2*$4}'`
+# including some important files
+. /vol/euclid1/euclid1_raid1/dklaes/reduce_KIDS_1.7.6_test/OMEGACAM.ini
+. /vol/euclid1/euclid1_raid1/dklaes/reduce_KIDS_1.7.6_test/bash_functions.include
+. /vol/euclid1/euclid1_raid1/dklaes/reduce_KIDS_1.7.6_test/progs.ini
 
 # Creating the subfolders with data...
+mkdir ${MAIND}/bootstrapping/realisation_${NUMREL}
+${P_PYTHON} bootstrapping.py -i ${MAIND}/chip_all_filtered.cat -n ${NUMREL} -p ${MAIND}/bootstrapping/realisation_${NUMREL}/ -t PSSC
 
-if [ ! -d "${MAIND}/bootstrapping" ]; then
-  mkdir ${MAIND}/bootstrapping
-else
-  rm -r ${MAIND}/bootstrapping
-  mkdir ${MAIND}/bootstrapping
-fi
+# Fitting the data
+${P_PYTHON} illum_correction_fit.py -i ${MAIND}/bootstrapping/realisation_${NUMREL}/chip_all_filtered.cat \
+				-t PSSC -p ${MAIND}/bootstrapping/realisation_${NUMREL}/
 
-i=1
-while [ ${i} -le ${NREL} ]
-do
-  mkdir ${MAIND}/bootstrapping/realisation_${i}
-  i=$(( $i + 1 ))
-done
+#Applying the fit-parameter to our catalog data...
+${P_PYTHON} illum_ldactools.py -i ${MAIND}/bootstrapping/realisation_${NUMREL}/chip_all_filtered.cat \
+			-o ${MAIND}/bootstrapping/realisation_${NUMREL}/chip_all_filtered_fitted.cat -t PSSC \
+			-a CALCS_AFTER_FITTING \
+			-e "${MAIND}/bootstrapping/realisation_${NUMREL}/coeffs.txt ${FILTER}"
 
-./bootstrapping.py ${MAIND} ${NCHIPS} ${NREL}
+${P_PYTHON} illum_ldactools.py -i ${MAIND}/bootstrapping/realisation_${NUMREL}/chip_all_filtered_fitted.cat -t PSSC \
+			-a STATISTICS -e "${MAIND}/bootstrapping/realisation_${NUMREL}/coeffs.txt" \
+			-o ${MAIND}/bootstrapping/realisation_${NUMREL}/stats.txt
 
-A=`grep A ${MAIND}/chip_all.dat | ${P_GAWK} '{print $3}'`
-B=`grep B ${MAIND}/chip_all.dat | ${P_GAWK} '{print $3}'`
-C=`grep C ${MAIND}/chip_all.dat | ${P_GAWK} '{print $3}'`
-D=`grep D ${MAIND}/chip_all.dat | ${P_GAWK} '{print $3}'`
-E=`grep E ${MAIND}/chip_all.dat | ${P_GAWK} '{print $3}'`
-
-echo $A $B $C $D $E ${PIXXMAX} ${PIXYMAX} | ${P_GAWK} '{print (-$5/$3-2*$2/$3*((2*$1*$5-$3*$4)/($3*$3-4*$1*$2)))*$6/2, ((2*$1*$5-$3*$4)/($3*$3-4*$1*$2))*$7/2}' > ${MAIND}/bootstrapping/true_position.csv
-
-i=1
-while [ ${i} -le ${NREL} ]
-do
-  A=`grep A ${MAIND}/bootstrapping/realisation_${i}/chip_all.dat | ${P_GAWK} '{print $3}'`
-  B=`grep B ${MAIND}/bootstrapping/realisation_${i}/chip_all.dat | ${P_GAWK} '{print $3}'`
-  C=`grep C ${MAIND}/bootstrapping/realisation_${i}/chip_all.dat | ${P_GAWK} '{print $3}'`
-  D=`grep D ${MAIND}/bootstrapping/realisation_${i}/chip_all.dat | ${P_GAWK} '{print $3}'`
-  E=`grep E ${MAIND}/bootstrapping/realisation_${i}/chip_all.dat | ${P_GAWK} '{print $3}'`
-
-  echo $A $B $C $D $E ${PIXXMAX} ${PIXYMAX} | ${P_GAWK} '{print (-$5/$3-2*$2/$3*((2*$1*$5-$3*$4)/($3*$3-4*$1*$2)))*$6/2, ((2*$1*$5-$3*$4)/($3*$3-4*$1*$2))*$7/2}' >> ${MAIND}/bootstrapping/bootstrapping.csv
-  i=$(( $i + 1 ))
-done
-rm ${MAIND}/bootstrapping/bootstrapping_distance.csv
-rm ${MAIND}/bootstrapping/bootstrapping_X.dat
-rm ${MAIND}/bootstrapping/bootstrapping_Y.dat
-TRUE=`cat ${MAIND}/bootstrapping/true_position.csv`
-
-while read LINE
-do
-  X=`echo ${LINE} ${TRUE} | ${P_GAWK} '{print $1-$3}'`
-  Y=`echo ${LINE} ${TRUE} | ${P_GAWK} '{print $2-$4}'`
-  echo ${LINE} ${X} ${Y} >> ${MAIND}/bootstrapping/bootstrapping_distance.csv
-done < ${MAIND}/bootstrapping/bootstrapping.csv
-
-${P_GAWK} '{print $3}' ${MAIND}/bootstrapping/bootstrapping_distance.csv | ${P_GAWK} -f /vol/aibn41/aibn41_1/dklaes/data/reduce_KIDS/meanvar.awk >> ${MAIND}/bootstrapping/bootstrapping_X.dat
-${P_GAWK} '{print $4}' ${MAIND}/bootstrapping/bootstrapping_distance.csv | ${P_GAWK} -f /vol/aibn41/aibn41_1/dklaes/data/reduce_KIDS/meanvar.awk >> ${MAIND}/bootstrapping/bootstrapping_Y.dat
-
-
-
-j=1
-while [ ${j} -le ${NREL} ]
-do
-  i=1
-  while [ ${i} -le ${NCHIPS} ]
-  do
-    echo "" >> ${MAIND}/bootstrapping/realisation_${j}/chip_${i}.dat
-    echo "Statistics of residuals before fitting:" >> ${MAIND}/bootstrapping/realisation_${j}/chip_${i}.dat
-    ${P_GAWK} '{if ($1!="#") {print $5}}' ${MAIND}/bootstrapping/realisation_${j}/chip_${i}.csv | ${P_GAWK} -f /vol/aibn41/aibn41_1/dklaes/data/reduce_KIDS/meanvar.awk >> ${MAIND}/bootstrapping/realisation_${j}/chip_${i}.dat
-    echo "" >> ${MAIND}/bootstrapping/realisation_${j}/chip_${i}.dat
-    echo "Statistics of residuals after fitting:" >> ${MAIND}/bootstrapping/realisation_${j}/chip_${i}.dat
-    ${P_GAWK} '{if ($1!="#") {print $7}}' ${MAIND}/bootstrapping/realisation_${j}/chip_${i}.csv | ${P_GAWK} -f /vol/aibn41/aibn41_1/dklaes/data/reduce_KIDS/meanvar.awk >> ${MAIND}/bootstrapping/realisation_${j}/chip_${i}.dat
-    cat ${MAIND}/bootstrapping/realisation_${j}/chip_${i}.csv >> ${MAIND}/bootstrapping/realisation_${j}/chip_all.csv
-    i=$(( $i + 1 ))
-  done
-  echo "" >> ${MAIND}/bootstrapping/realisation_${j}/chip_all.dat
-  echo "Statistics of residuals before fitting:" >> ${MAIND}/bootstrapping/realisation_${j}/chip_all.dat
-  ${P_GAWK} '{if ($1!="#") {print $5}}' ${MAIND}/bootstrapping/realisation_${j}/chip_all.csv | ${P_GAWK} -f /vol/aibn41/aibn41_1/dklaes/data/reduce_KIDS/meanvar.awk >> ${MAIND}/bootstrapping/realisation_${j}/chip_all.dat
-  echo "" >> ${MAIND}/bootstrapping/realisation_${j}/chip_all.dat
-  echo "Statistics of residuals after fitting:" >> ${MAIND}/bootstrapping/realisation_${j}/chip_all.dat
-  ${P_GAWK} '{if ($1!="#") {print $7}}' ${MAIND}/bootstrapping/realisation_${j}/chip_all.csv | ${P_GAWK} -f /vol/aibn41/aibn41_1/dklaes/data/reduce_KIDS/meanvar.awk >> ${MAIND}/bootstrapping/realisation_${j}/chip_all.dat
-  ${P_GAWK} '{print $5, $7}' ${MAIND}/bootstrapping/realisation_${j}/chip_all.csv >> ${MAIND}/bootstrapping/all.csv
-  j=$(( $j + 1 ))
-done
-
-
-echo "Statistics of residuals before fitting:" >> ${MAIND}/bootstrapping/all.dat
-${P_GAWK} '{if ($1!="#") {print $1}}' ${MAIND}/bootstrapping/all.csv | ${P_GAWK} -f /vol/aibn41/aibn41_1/dklaes/data/reduce_KIDS/meanvar.awk >> ${MAIND}/bootstrapping/all.dat
-echo "" >> ${MAIND}/bootstrapping/all.dat
-echo "Statistics of residuals after fitting:" >> ${MAIND}/bootstrapping/all.dat
-${P_GAWK} '{if ($1!="#") {print $2}}' ${MAIND}/bootstrapping/all.csv | ${P_GAWK} -f /vol/aibn41/aibn41_1/dklaes/data/reduce_KIDS/meanvar.awk >> ${MAIND}/bootstrapping/all.dat
+${P_PYTHON} illum_ldactools.py -i ${MAIND}/bootstrapping/realisation_${NUMREL}/chip_all_filtered_fitted.cat -t PSSC \
+			-o ${MAIND}/bootstrapping/realisation_${NUMREL}/fitting.txt -a MAG_DEPENDENCY
