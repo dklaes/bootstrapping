@@ -234,11 +234,12 @@ def calculate_ellipse(coordinates, prefactors, center):
 	area = np.append(area, len(epscond2.flatten()))
 
 	x = np.append(x, XXcond2[distance==maxdistance[k]])
-	y = np.append(y, YYcond2[distance==maxdistance[k]])
-	eps = np.append(eps, epscond2[distance==maxdistance[k]])
-
 	del XXcond2
+	
+	y = np.append(y, YYcond2[distance==maxdistance[k]])
 	del YYcond2
+	
+	eps = np.append(eps, epscond2[distance==maxdistance[k]])
 	del epscond2
 
   maxdistancefinal = np.amax(maxdistance)
@@ -708,17 +709,27 @@ elif (action == 'STATISTICS'):
   UR = np.array([int((os.popen("echo ${OFFSETX} | awk '{print $" + str(MAXCHIPX) + "}'").readlines())[0]) + CHIPXMAX, int((os.popen("echo ${OFFSETY} | awk '{print $" + str(MAXCHIPY*MAXCHIPX) + "}'").readlines())[0]) + CHIPYMAX])
   
   coordinates = np.array([])
-  # Bottom left part of the camera
-  coordinates = np.append(coordinates, (LL[0],0,LL[1],0))
-  # Bottom right part of the camera.
-  coordinates = np.append(coordinates, (0,LR[0],LR[1],0))
-  # Upper left part of the camera.
-  coordinates = np.append(coordinates, (UL[0],0,0,UL[1]))
-  # Upper right part of the camera.
-  coordinates = np.append(coordinates, (0,UR[0],0,UR[1]))
+  coordinates = np.append(coordinates, (UL[0], UL[0]/2, UL[1], UL[1]/2))
+  coordinates = np.append(coordinates, (UL[0]/2, 0, UL[1], UL[1]/2))
+  coordinates = np.append(coordinates, (0, UR[0]/2, UR[1], UR[1]/2))
+  coordinates = np.append(coordinates, (UR[0]/2, UR[0], UR[1], UR[1]/2))
+  
+  coordinates = np.append(coordinates, (UL[0], UL[0]/2, UL[1]/2, 0))
+  coordinates = np.append(coordinates, (UL[0]/2, 0, UL[1]/2, 0))
+  coordinates = np.append(coordinates, (0, UR[0]/2, UR[1]/2, 0))
+  coordinates = np.append(coordinates, (UR[0]/2, UR[0], UR[1]/2, 0))
+  
+  coordinates = np.append(coordinates, (LL[0], LL[0]/2, 0, LL[1]/2))
+  coordinates = np.append(coordinates, (LL[0]/2, 0, 0, LL[1]/2))
+  coordinates = np.append(coordinates, (0, LR[0]/2, 0, LR[1]/2))
+  coordinates = np.append(coordinates, (LR[0]/2, LR[0], 0, LR[1]/2))
+  
+  coordinates = np.append(coordinates, (LL[0], LL[0]/2, LL[1]/2, LL[1]))
+  coordinates = np.append(coordinates, (LL[0]/2, 0, LL[1]/2, LL[1]))
+  coordinates = np.append(coordinates, (0, LR[0]/2, LR[1]/2, LR[1]))
+  coordinates = np.append(coordinates, (LR[0]/2, LR[0], LR[1]/2, LR[1]))
 
   coordinates = coordinates.reshape((-1,4))
-  
   statistics(infile[0], outfile, table, external, coordinates)
 
 elif (action == 'FILTER_USUABLE'):
