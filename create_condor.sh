@@ -16,9 +16,9 @@ if [ ! -d "${MAIND}/bootstrapping" ]; then
 fi
 
 echo "Universe   = vanilla" > ${MAIND}/${OUTFILE}
-echo "Executable = ${MAIND}/../scripts/bootstrapping.sh" >> ${MAIND}/${OUTFILE}
 echo "initialdir     = /vol/users/users/dklaes/git/bootstrapping" >> ${MAIND}/${OUTFILE}
 echo "transfer_input_files = ldac.py, bootstrapping.py, illum_correction_fit.py, illum_ldactools.py" >> ${MAIND}/${OUTFILE}
+echo "Executable = /vol/users/users/dklaes/git/bootstrapping/bootstrapping.sh" >> ${MAIND}/${OUTFILE}
 echo 'Requirements = (Memory > 1500)' >> ${MAIND}/${OUTFILE}
 echo "" >> ${MAIND}/${OUTFILE}
 
