@@ -16,13 +16,13 @@ if [ ! -d "${MAIND}/bootstrapping" ]; then
 fi
 
 echo "Universe   = vanilla" > ${MAIND}/${OUTFILE}
-#echo "initialdir     = /vol/users/users/dklaes/git/bootstrapping" >> ${MAIND}/${OUTFILE}
-echo "transfer_input_files = /vol/users/users/dklaes/git/bootstrapping/ldac.py, /vol/users/users/dklaes/git/bootstrapping/bootstrapping.py, /vol/users/users/dklaes/git/bootstrapping/illum_correction_fit.py, /vol/users/users/dklaes/git/bootstrapping/illum_ldactools.py, /vol/users/users/dklaes/git/bootstrapping/chip_all_filtered.cat" >> ${MAIND}/${OUTFILE}
 echo "Executable = /vol/users/users/dklaes/git/bootstrapping/bootstrapping.sh" >> ${MAIND}/${OUTFILE}
+echo "transfer_input_files = /vol/users/users/dklaes/git/bootstrapping/ldac.py" >> ${MAIND}/${OUTFILE}
+echo "initialdir     = /vol/users/users/dklaes/git/bootstrapping" >> ${MAIND}/${OUTFILE}
+echo "remote_initialdir     = /vol/users/users/dklaes/git/bootstrapping" >> ${MAIND}/${OUTFILE}
 echo 'Requirements = (Memory > 1500)' >> ${MAIND}/${OUTFILE}
 echo "" >> ${MAIND}/${OUTFILE}
 
-echo "Initialdir = ${MAIND}/bootstrapping/realisation_\$(Cluster).\$(Process)/" >> ${MAIND}/${OUTFILE}
 echo "Arguments  = ${MAIND} \$(Cluster).\$(Process)" >> ${MAIND}/${OUTFILE}
 echo "Log        = ${MAIND}/log/realisation_\$(Cluster).\$(Process).log" >> ${MAIND}/${OUTFILE}
 echo "Output     = ${MAIND}/output/realisation_\$(Clutser).\$(Process).out" >> ${MAIND}/${OUTFILE}

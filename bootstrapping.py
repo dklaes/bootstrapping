@@ -38,7 +38,7 @@ for k in range(nrows):
 
 hdu.header = firstfile[table].header
 hdu.columns = firstfile[table].columns
-hdu.writeto(path + "chip_all_filtered_bootstrapping.cat", clobber=True)
+hdu.writeto(path + "chip_all_filtered.cat", clobber=True)
   
 t2=time()
 
