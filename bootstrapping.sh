@@ -28,7 +28,7 @@ ${P_PYTHON} illum_ldactools.py -i ${MAIND}/bootstrapping/realisation_${NUMREL}/c
 			-e "${MAIND}/bootstrapping/realisation_${NUMREL}/coeffs.txt ${FILTER}"
 
 ${P_PYTHON} illum_ldactools.py -i ${MAIND}/bootstrapping/realisation_${NUMREL}/chip_all_filtered_fitted.cat -t PSSC \
-			-a STATISTICS -e "${MAIND}/bootstrapping/realisation_${NUMREL}/coeffs.txt" \
+			-a STATISTICS -e "${MAIND}/bootstrapping/realisation_${NUMREL}/coeffs.txt 10 10" \
 			-o ${MAIND}/bootstrapping/realisation_${NUMREL}/stats.txt
 
 ${P_PYTHON} illum_ldactools.py -i ${MAIND}/bootstrapping/realisation_${NUMREL}/chip_all_filtered_fitted.cat -t PSSC \
