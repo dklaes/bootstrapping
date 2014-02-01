@@ -25,6 +25,6 @@ echo "" >> ${MAIND}/${OUTFILE}
 
 echo "Arguments  = ${MAIND} \$(Cluster).\$(Process)" >> ${MAIND}/${OUTFILE}
 echo "Log        = ${MAIND}/log/realisation_\$(Cluster).\$(Process).log" >> ${MAIND}/${OUTFILE}
-echo "Output     = ${MAIND}/output/realisation_\$(Clutser).\$(Process).out" >> ${MAIND}/${OUTFILE}
+echo "Output     = ${MAIND}/output/realisation_\$(Cluster).\$(Process).out" >> ${MAIND}/${OUTFILE}
 echo "Error      = ${MAIND}/error/realisation_\$(Cluster).\$(Process).err" >> ${MAIND}/${OUTFILE}
 echo "Queue ${NREL}" >> ${MAIND}/${OUTFILE}
