@@ -34,4 +34,4 @@ ${P_PYTHON} illum_ldactools.py -i ${MAIND}/bootstrapping/realisation_${NUMREL}/c
 ${P_PYTHON} illum_ldactools.py -i ${MAIND}/bootstrapping/realisation_${NUMREL}/chip_all_filtered_fitted.cat -t PSSC \
 			-o ${MAIND}/bootstrapping/realisation_${NUMREL}/fitting.txt -a MAG_DEPENDENCY
 
-rm ${MAIND}/chip_all_filtered.cat &
+rm ${MAIND}/bootstrapping/realisation_${NUMREL}/chip_all_filtered.cat &
