@@ -29,7 +29,7 @@ done
 echo "Universe   = vanilla" > ${MAIND}/${OUTFILE}
 echo "Executable = /vol/users/users/dklaes/git/bootstrapping/bootstrapping.sh" >> ${MAIND}/${OUTFILE}
 echo "transfer_input_files = /vol/users/users/dklaes/git/bootstrapping/ldac.py" >> ${MAIND}/${OUTFILE}
-echo 'Requirements = (Memory > 1500)' >> ${MAIND}/${OUTFILE}
+echo 'Requirements = (Memory > 550) && (Machine != "aibn79.astro.uni-bonn.de")' >> ${MAIND}/${OUTFILE}
 echo "" >> ${MAIND}/${OUTFILE}
 
 i=${NRELSTART}
