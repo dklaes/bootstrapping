@@ -92,7 +92,7 @@ def calcs_before_fitting(infile, outfile, table, external, replace=False):
   reference_err = data[filtername + '_err']
   Xpos_global = data['Xpos_global']
   Ypos_global = data['Ypos_global']
-  
+
   data['MagZP'] = Mag + ZP + EXT*AIRMASS + COLCOEFF*COLOR
   MagZP = data['MagZP']
   
@@ -123,9 +123,9 @@ def calcs_after_fitting(infile, outfile, table, external, replace=False):
     coeffs[entries[0]] = float(entries[2])
     coeffs[entries[0] + '_Err'] = float(entries[4])
 
-  F = np.array(data['CHIP'], dtype='float64')
-  F_Err = np.array(data['CHIP'], dtype='float64')
-  CHIP = data['CHIP']
+  F = np.array(data['IMAGEID'], dtype='float64')
+  F_Err = np.array(data['IMAGEID'], dtype='float64')
+  CHIP = data['IMAGEID']
   
   for i in np.unique(CHIP):
     np.place(F, F==i, coeffs['F' + str(i)])
@@ -282,7 +282,7 @@ def statistics(infile, outfile, table, external, coordinates):
   
   for i in range(NUMCHIPS):
     output_chip = {}
-    data_chip = filter_elements(data, 'CHIP', i+1, "=")
+    data_chip = filter_elements(data, 'IMAGEID', i+1, "=")
     
     output_chip['mean_before'] = np.mean(data_chip['Residual'])
     output_chip['mean_after'] = np.mean(data_chip['Residual_fitted'])
@@ -454,7 +454,7 @@ def mag_dependency(infile, outfile, table, realisation=0):
     if (i == 0):
       data2 = data
     else:
-      data2 = filter_elements(data, 'CHIP', i, '=')
+      data2 = filter_elements(data, 'IMAGEID', i, '=')
 
     MagZP = np.array(data2['MagZP'], dtype=np.float64)
     Residual = np.array(data2['Residual'], dtype=np.float64)
@@ -780,13 +780,15 @@ elif (action == 'FILTER_USUABLE'):
   data5 = filter_elements(data4, color1, -9999, '>')
   data6 = filter_elements(data5, color2, 99, '<')
   data7 = filter_elements(data6, color2, -9999, '>')
+  data8 = filter_elements(data7, colorname, 10, '<')
+  data = filter_elements(data8, colorname, -10, '>')
   
   header.add_history('Filter usuable magnitude values for both color filters and reference filter, meaning between -9999 and 99.')
   data.saveas(outfile, clobber=replace)
 
 elif (action == 'CHECK_ENOUGH_OBJECTS'):
   data = ldac.LDACCat(infile[0])[table]
-  data_chip = filter_elements(data, 'CHIP', value, "=")
+  data_chip = filter_elements(data, 'IMAGEID', value, "=")
   print(len(data_chip))
 
 elif (action == 'MAG_DEPENDENCY'):
