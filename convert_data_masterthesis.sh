@@ -12,7 +12,7 @@ FILTER=r
 BOOT_SCRIPTS=/vol/users/users/dklaes/git/bootstrapping/
 
 FOLDER=${MD}/bootstrapping/realisation_${i}
-#rm ${FOLDER}/chip_?.csv ${FOLDER}/chip_??.csv ${FOLDER}/chip_all.cov &
+cp ${MD}/chip_all.csv ./chip_all_original.csv
 
 {
 mv ${FOLDER}/chip_all.dat ./coeffs.txt
@@ -32,7 +32,7 @@ rm ./chip_all.cat ./tmp.cat &
 {
 while read LINE
 do
-	NLINE=`grep -m1 -n "${LINE}" ${MD}/chip_all.csv | awk -F":" '{print $1}'`
+	NLINE=`grep -m1 -n "${LINE}" ./chip_all_original.csv | awk -F":" '{print $1}'`
 	echo ${NLINE} >> ./objects.txt
 done < ./chip_all.csv
 mv ./objects.txt ${FOLDER}/
@@ -50,6 +50,6 @@ mv ./coeffs.txt ${FOLDER}/coeffs.txt
 ${P_PYTHON} ${BOOT_SCRIPTS}/illum_ldactools.py -i chip_all_filtered_fitted.cat -t PSSC \
 			-o ${FOLDER}/fitting.txt -a MAG_DEPENDENCY
 
-rm ./chip_all_filtered_fitted.cat ./chip_all.csv
+rm ./chip_all_filtered_fitted.cat ./chip_all.csv ./chip_all_original.csv
 
 wait
