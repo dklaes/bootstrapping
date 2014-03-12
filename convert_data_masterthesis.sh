@@ -86,6 +86,6 @@ mv ./coeffs.txt ${FOLDER}/coeffs.txt
 ${P_PYTHON} ${BOOT_SCRIPTS}/illum_ldactools.py -i chip_all_filtered_fitted.cat -t PSSC \
 			-o ${FOLDER}/fitting.txt -a MAG_DEPENDENCY
 
-rm ./chip_all_filtered_fitted.cat ./chip_all.csv ./chip_all_original.csv
+rm ./chip_all_filtered_fitted.cat ./chip_all.csv ./chip_all_original.csv ./coeffs_old.txt
 
 wait
