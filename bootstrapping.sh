@@ -2,7 +2,7 @@
 # New bootstrapping script
 # To reduce traffic, please use the following commands before starting:
 # mv chip_all_filtered.cat original_chip_all_filtered.cat
-# ldacdelkey -i original_chip_all_filtered.cat -o chip_all_filtered_original_small.cat -t PSSC -k Mag MagErr AIRMASS IMAGEID IMAFLAGS_ISO GABODSID EXPTIME A_WCS B_WCS Dec Dec_err Epoch FIELD_POS Flag Ra Ra_err SeqString THETAWCS gmag gmag_err gmr imag imag_err imz rmi umag umag_err umg zmag zmag_err Xpos Ypos N_00 N_01 gmr_err
+# ldacdelkey -i original_chip_all_filtered.cat -o chip_all_filtered_original_small.cat -t PSSC -k Mag MagErr AIRMASS IMAFLAGS_ISO GABODSID EXPTIME A_WCS B_WCS Dec Dec_err Epoch FIELD_POS Flag Ra Ra_err SeqString THETAWCS gmag gmag_err gmr imag imag_err imz rmi umag umag_err umg zmag zmag_err Xpos Ypos N_00 N_01 gmr_err
 
 # $1 = main directory where the files are
 # $2 = number of realisation
