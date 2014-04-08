@@ -440,6 +440,7 @@ class LDACTable(object):
         hdu.header = a.hdu.header
         hdu.header.update('NAXIS2', nrows)
         hdu.columns = a.hdu.columns
+        hdu.name = a.hdu.name
       
         return LDACTable(hdu)
 
