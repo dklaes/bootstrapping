@@ -22,6 +22,9 @@ i=${NRELSTART}
 while [ ${i} -le ${NRELSTOP} ]
 do
   mkdir ${MAIND}/bootstrapping/realisation_${i}/
+  touch ${MAIND}/log/realisation_${i}.log
+  touch ${MAIND}/output/realisation_${i}.out
+  touch ${MAIND}/error/realisation_${i}.err
   i=$(( $i + 1 ))
 done
 
@@ -29,7 +32,7 @@ done
 echo "Universe   = vanilla" > ${MAIND}/${OUTFILE}
 echo "Executable = /vol/users/users/dklaes/git/bootstrapping/bootstrapping.sh" >> ${MAIND}/${OUTFILE}
 echo "transfer_input_files = /vol/users/users/dklaes/git/bootstrapping/ldac.py" >> ${MAIND}/${OUTFILE}
-echo 'Requirements = (Memory > 550) && (Machine != "aibn79.astro.uni-bonn.de")' >> ${MAIND}/${OUTFILE}
+#echo 'Requirements = (Memory > 550) && (Machine != "aibn79.astro.uni-bonn.de")' >> ${MAIND}/${OUTFILE}
 echo "" >> ${MAIND}/${OUTFILE}
 
 i=${NRELSTART}
