@@ -11,9 +11,9 @@ import random
 import pyfits
 
 #Reading command line arguments
-opts, args = getopt.getopt(sys.argv[1:], "i:p:t:n:", ["input=", "path=", "table=", "nrel="])
+opts, args = getopt.getopt(sys.argv[1:], "i:p:t:n:e:", ["input=", "path=", "table=", "nrel=", "extern="])
 
-infile = path = table = nrel = None
+infile = path = table = nrel = extern = None
 for o, a in opts:
     if o in ("-i"):
         infile = a.split()
@@ -23,6 +23,8 @@ for o, a in opts:
         table = a
     elif o in ("-n"):
 	nrel = a
+    elif o in ("-e"):
+	extern = a
 
 t1=time()
 
@@ -30,11 +32,19 @@ firstfile = pyfits.open(infile[0])
 nrows = firstfile[table].data.shape[0]
 hdu = pyfits.new_table(firstfile[table].columns, nrows=nrows)
   
-
-for k in range(nrows):
-  l = random.randrange(0,nrows,1)
-  for i in range(len(firstfile[table].columns)):
-    hdu.data.field(i)[k]=firstfile[table].data.field(i)[l]
+if extern == None:
+	for k in range(nrows):
+	  l = random.randrange(0,nrows,1)
+	  for i in range(len(firstfile[table].columns)):
+	    hdu.data.field(i)[k]=firstfile[table].data.field(i)[l]
+else:
+	f = open(extern)
+	array = f.readlines()
+	array = map(lambda s: s.strip(), array)
+	for k in range(nrows):
+	  l = int(array[k]) - 1
+	  for i in range(len(firstfile[table].columns)):
+	    hdu.data.field(i)[k]=firstfile[table].data.field(i)[l]
 
 hdu.header = firstfile[table].header
 hdu.columns = firstfile[table].columns
